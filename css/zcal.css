@@ -1,0 +1,71 @@
+/* zcal
+copyright 2013 Ethan Brown <ethan@philomathics.com> */
+
+.zcal .week .vheader {
+	/* the time-label column takes up 0.4 the space of the day columns */
+	float: left;
+	width: 5.40540540540541%; /* 0.4/7.4  */
+	/* by default, only the first vertical header is shown; we hide all vheaders
+	here, and override this rule for the first vheader below */
+	display: none;
+}
+
+.zcal .week .vheader.first {
+	display: block;
+}
+
+.zcal .week .day {
+	float: left;
+	width: 13.51351351351351%;			/* 1.0/7.4  */
+	/* TODO: ask Greg how to make these borders work.  If I add this in, it throws the % layout off, and adding
+	fudge factors doesn't seem to work very reliably....
+	border-left: 1px solid #ccc;
+	*/
+}
+
+/* when the screen gets small (like a phone, for example), we display days vertically
+stacked, instead of horizontally. */
+@media (max-width: 450px) {
+
+	.zcal .week .vheader {
+		clear: left;
+		width: 10%;
+		display: block;			/* show all vertical headers */
+		margin-bottom: 40px;	/* give the next day some space */
+	}
+
+	.zcal .week .day {
+		width: 90%;
+	}
+
+}
+
+/* general formatting for time blocks */
+.zcal .time-block {
+	height: 11px;
+	border-top: solid 1px rgba(255,255,255,0.0);	/* transparent border to preserve height */
+}
+
+/* overrided time block formatting in the vertical header */
+.zcal .vheader .time-block {
+	font-size: 12px;
+	text-align: right;
+	padding-right: 4px;
+}
+
+/* emphasized line for top of the hour */
+.zcal .day > .hour {
+	border-top: solid 1px black;
+}
+
+/* inconspicuous line for every other quarter hour */
+.zcal .day > .hour15,
+.zcal .day > .hour30,
+.zcal .day > .hour45 {
+	border-top: solid 1px #ccc;
+}
+
+.zcal .day .header,
+.zcal .vheader .header {
+	height: 20px;
+}
