@@ -77,6 +77,8 @@ stacked, instead of horizontally. */
 	sets it to percentage of document, not container, so that's no help.  i tried left:0;right:0, and had
 	disasterous results.  width can be set dynamically in javascript, but then resizing window doesn't track, and
 	the thought of adding handlers to deal with that...oy vey.  must be better solution. */
+}
+
+.zcal .appt .appt-contents {
 	padding: 3px;
-	border: solid 1px black;
 }

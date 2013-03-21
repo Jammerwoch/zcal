@@ -96,11 +96,10 @@
 		var m1 = timeToMinutesPastMidnight( startTime );
 		var m2 = timeToMinutesPastMidnight( endTime );
 		var timeBlockHeight = 12/15;	// TODO: make height and block time configurable
-		console.log( 'm1=' + m1 );
-		console.log( 'm2=' + m2 );
+		// TODO: take into account appt borders
 		var style = 'margin-top:' + (m1-dayStart)*timeBlockHeight + 'px;' +
 			'height:' + (m2-m1)*timeBlockHeight + 'px;';
-		$dayHeader.after( '<div class="appt" style="' + style + '">' + content + '</div>' );
+		$dayHeader.after( '<div class="appt" style="' + style + '"><div class="appt-contents">' + content + '</div></div>' );
 	}
 
 })(jQuery);
