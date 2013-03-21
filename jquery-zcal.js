@@ -54,29 +54,53 @@
 		// TODO: allow day to start on something other than Mon
 		// TODO: provide mappings to single-letter, short, and long day names
 		// TODO: i18n
-		var days = [ 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun' ];
+		var days = [ 'mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun' ];
 		// TODO: allow a way to specify startTime, endTime, and timeIncrement
 		var startTime = 900;
 		var endTime = 2100;
 		var timeIncrement = 15;
 
 		// create "week" div, which will hold "day" divs
-		this.append( '<div class="week"></div>' );
+		var dataAttrs = 'data-starttime="' + startTime + '" data-endtime="' + endTime + '"';
+		this.append( '<div class="week" ' + dataAttrs + '></div>' );
 		var $week = this.find('.week');
 
 		// create a "day" div wthin "week" for each day of the week
 		for( var day=0; day<days.length; day++ ) {
+			var dataAttrs = 'data-day="' + day + '"';
 			// create a vertical header column for the day and populate.  using media queries, the
 			// header column can be turned off for all but the first day for fullscreen
-			$week.append( '<div class="vheader' + (day===0?' first':'') + '"><div class="header"></div></div>' );
+			$week.append( '<div class="vheader' + (day===0?' first':'') + '"' + dataAttrs +'><div class="header"></div></div>' );
 			addTimeBlocks( $week.children().last(), startTime, endTime, timeIncrement, 
 				function(t,m) { return m===0 ? formatTime( t, true ) : ''; } );
 
 			// create the "day" column and populate
-			$week.append( '<div class="day"><div class="header">' + days[day] + '</div></div>' );
+			$week.append( '<div class="day"' + dataAttrs + '><div class="header">' + days[day] + '</div></div>' );
 			addTimeBlocks( $week.children().last(), startTime, endTime, timeIncrement );
 		}
 
+	}
+
+	function timeToMinutesPastMidnight( time ) {
+		var h = Math.floor( time/100 );
+		var m = time % 100;
+		return h*60+m;
+	}
+
+	$.fn.zcalAddAppointment = function(day,startTime,endTime,content) {
+		// TODO: all the time calculations need to be...more flexible & consistent
+		var $week = this.find( '.week' );
+		var $day = $week.find( '.day[data-day=' + day + ']' );
+		var $dayHeader = $day.find( '.header' );
+		var dayStart = timeToMinutesPastMidnight( $week.data( 'starttime' ) );
+		var m1 = timeToMinutesPastMidnight( startTime );
+		var m2 = timeToMinutesPastMidnight( endTime );
+		var timeBlockHeight = 12/15;	// TODO: make height and block time configurable
+		console.log( 'm1=' + m1 );
+		console.log( 'm2=' + m2 );
+		var style = 'margin-top:' + (m1-dayStart)*timeBlockHeight + 'px;' +
+			'height:' + (m2-m1)*timeBlockHeight + 'px;';
+		$dayHeader.after( '<div class="appt" style="' + style + '">' + content + '</div>' );
 	}
 
 })(jQuery);

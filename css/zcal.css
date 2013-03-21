@@ -69,3 +69,14 @@ stacked, instead of horizontally. */
 .zcal .vheader .header {
 	height: 20px;
 }
+
+.zcal .appt {
+	position: absolute;
+	background-color: rgba(50,50,255,0.8);
+	/* TODO: ask Greg how to set width!  Since this has abs positioning, width is tricky.  setting it to percentage
+	sets it to percentage of document, not container, so that's no help.  i tried left:0;right:0, and had
+	disasterous results.  width can be set dynamically in javascript, but then resizing window doesn't track, and
+	the thought of adding handlers to deal with that...oy vey.  must be better solution. */
+	padding: 3px;
+	border: solid 1px black;
+}
