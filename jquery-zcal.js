@@ -1,6 +1,8 @@
 // zcal
 // copyright 2013 Ethan Brown <ethan@philomathics.com>
 
+"use strict";
+
 (function($){
 
 	function zeroPad(num,width) {
@@ -24,10 +26,10 @@
 
 	// adds <div class="time-block"></div> elements to parent element; this is how you fill up a "day" or a label column
 	// fnContent is a function that takes the integer time (0=midnight, 1200=noon, etc.), the minute past the hour (for
-	// convenience), and returns the contents of the <div>
-	function addTimeBlocks( $elt, startTime, endTime, timeIncrement, fnContent ) {
+	// convenience), and returns the contents of the <div>.
+	function addTimeBlocks( $elt, settings, fnContent ) {
 		if( !fnContent ) fnContent = function() {return '';};
-		for( var t=startTime; t<endTime-1; t+=timeIncrement ) {
+		for( var t=settings['startTime']; t<settings['endTime']-1; t+=settings['timeIncrement'] ) {
 			var m = t%100;
 			if( m===60 ) {
 				// it's generally a bad idea to modify the loop variable, but since we're dealing
@@ -36,8 +38,7 @@
 				m = 0;
 				t += 40;	// advance to the next hour
 			}
-			// TODO: formatting options for 12h/24h time
-			var label = m===0 ? formatTime( t, true ) : '';
+			var label = m===0 ? formatTime( t, settings['use24hour'] ) : '';
 			var extraClasses = '';
 			switch( m ) {
 				case 0: extraClasses = ' hour'; break;
@@ -45,40 +46,8 @@
 				case 30: extraClasses = ' hour30'; break;
 				case 45: extraClasses = ' hour45'; break;
 			}
-			$elt.append( '<div class="time-block' + extraClasses + '">' + fnContent(t,m) + '</div>' );
+			$elt.append( '<div class="time-block' + extraClasses + '" data-time="' + t + '">' + fnContent(t,m) + '</div>' );
 		}
-	}
-
-	$.fn.zcalWeek = function() {
-
-		// TODO: allow day to start on something other than Mon
-		// TODO: provide mappings to single-letter, short, and long day names
-		// TODO: i18n
-		var days = [ 'mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun' ];
-		// TODO: allow a way to specify startTime, endTime, and timeIncrement
-		var startTime = 900;
-		var endTime = 2100;
-		var timeIncrement = 15;
-
-		// create "week" div, which will hold "day" divs
-		var dataAttrs = 'data-starttime="' + startTime + '" data-endtime="' + endTime + '"';
-		this.append( '<div class="week" ' + dataAttrs + '></div>' );
-		var $week = this.find('.week');
-
-		// create a "day" div wthin "week" for each day of the week
-		for( var day=0; day<days.length; day++ ) {
-			var dataAttrs = 'data-day="' + day + '"';
-			// create a vertical header column for the day and populate.  using media queries, the
-			// header column can be turned off for all but the first day for fullscreen
-			$week.append( '<div class="vheader' + (day===0?' first':'') + '"' + dataAttrs +'><div class="header"></div></div>' );
-			addTimeBlocks( $week.children().last(), startTime, endTime, timeIncrement, 
-				function(t,m) { return m===0 ? formatTime( t, true ) : ''; } );
-
-			// create the "day" column and populate
-			$week.append( '<div class="day"' + dataAttrs + '><div class="header">' + days[day] + '</div></div>' );
-			addTimeBlocks( $week.children().last(), startTime, endTime, timeIncrement );
-		}
-
 	}
 
 	function timeToMinutesPastMidnight( time ) {
@@ -87,19 +56,80 @@
 		return h*60+m;
 	}
 
-	$.fn.zcalAddAppointment = function(day,startTime,endTime,content) {
-		// TODO: all the time calculations need to be...more flexible & consistent
-		var $week = this.find( '.week' );
-		var $day = $week.find( '.day[data-day=' + day + ']' );
-		var $dayHeader = $day.find( '.header' );
-		var dayStart = timeToMinutesPastMidnight( $week.data( 'starttime' ) );
-		var m1 = timeToMinutesPastMidnight( startTime );
-		var m2 = timeToMinutesPastMidnight( endTime );
-		var timeBlockHeight = 12/15;	// TODO: make height and block time configurable
-		// TODO: take into account appt borders
-		var style = 'margin-top:' + (m1-dayStart)*timeBlockHeight + 'px;' +
-			'height:' + (m2-m1)*timeBlockHeight + 'px;';
-		$dayHeader.after( '<div class="appt" style="' + style + '"><div class="appt-contents">' + content + '</div></div>' );
+
+	var methods = {
+
+		initWeek : function( options ) {
+
+			var settings = $.extend( {
+				'startTime': 900,
+				'endTime': 1700,
+				'timeIncrement': 15,
+				'timeBlockHeight': 12,	
+				'use24hour': true,
+			}, options );
+
+			// TODO: allow day to start on something other than Mon
+			// TODO: provide mappings to single-letter, short, and long day names
+			// TODO: i18n
+			var days = [ 'mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun' ];
+
+			// create "week" div, which will hold "day" divs
+			var dataAttrs = 'data-starttime="' + settings['startTime'] + '" data-endtime="' + settings['endTime'] + '"';
+			var $week = $('<div class="week" ' + dataAttrs + '></div>').appendTo(this);
+
+			// create a "day" div wthin "week" for each day of the week
+			for( var day=0; day<days.length; day++ ) {
+				var dataAttrs = 'data-day="' + day + '"';
+				// create a vertical header column for the day and populate.  using media queries, the
+				// header column can be turned off for all but the first day for fullscreen
+				var $dayHeader = $('<div class="vheader' + (day===0?' first':'') + '"' + dataAttrs +'><div class="header"></div></div>')
+					.appendTo($week);
+				addTimeBlocks( $dayHeader, settings, 
+					function(t,m) { return m===0 ? formatTime( t, true ) : ''; } );
+
+				// create the "day" column and populate
+				var $day = $('<div class="day"' + dataAttrs + '><div class="header">' + days[day] + '</div></div>')
+					.appendTo($week);
+				addTimeBlocks( $day, settings );
+			}
+
+			return this;
+		},
+
+		addAppointment : function( day, startTime, endTime, content ) {
+			// TODO: all the time calculations need to be...more flexible & consistent
+			var $week = this.find( '.week' );
+			var $day = $week.find( '.day[data-day=' + day + ']' );
+			var $dayHeader = $day.find( '.header' );
+			var dayStart = timeToMinutesPastMidnight( $week.data( 'starttime' ) );
+			var m1 = timeToMinutesPastMidnight( startTime );
+			var m2 = timeToMinutesPastMidnight( endTime );
+			var timeBlockHeight = 12/15;	// TODO: make height and block time configurable
+			// TODO: take into account appt borders
+			var style = 'margin-top:' + (m1-dayStart)*timeBlockHeight + 'px;' +
+				'height:' + (m2-m1)*timeBlockHeight + 'px;';
+			var $appt = $('<div class="appt" style="' + style + '"><div class="appt-contents">' + content + '</div></div>')
+				.insertAfter( $dayHeader );
+
+			// draggable support
+			$appt.draggable({ snap: '.time-block' });
+
+			return this;
+		},
+
+	};
+
+	$.fn.zcal = function( method ) {
+		if( methods[method] ) {
+			return methods[ method ].apply( this, Array.prototype.slice.call( arguments, 1 ) );
+		} else if( typeof method === 'object' || !method ) {
+			// for now, we're defaulting to initWeek; this may change in the future
+			return methods.initWeek.apply( this, arguments );
+		} else {
+			$.error( 'Method ' +  method + ' does not exist on jQuery.zcal' );
+		} 
 	}
+
 
 })(jQuery);

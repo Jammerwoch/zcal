@@ -11,17 +11,18 @@
 </head>
 
 <body>
-	<div class="zcal" />
+	<div class="zcal"></div>
 </body>
 
 <script src="http://code.jquery.com/jquery-1.9.1.min.js"></script>
+<script src="http://code.jquery.com/ui/1.10.2/jquery-ui.js"></script>
 
 <script src="jquery-zcal.js"></script>
 
 <script>
-	$('.zcal').zcalWeek();
-	$('.zcal').zcalAddAppointment( 2, 1015, 1130, '1015-1130' );
-	$('.zcal').zcalAddAppointment( 3,  900, 1030, '0900-1030' );
+	$('.zcal').zcal()
+		.zcal( 'addAppointment', 2, 1015, 1130, 'foo' )
+		.zcal( 'addAppointment', 3,  900, 1030, 'bar' );
 </script>
 
 </html>

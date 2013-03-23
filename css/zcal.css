@@ -1,6 +1,10 @@
 /* zcal
 copyright 2013 Ethan Brown <ethan@philomathics.com> */
 
+.zcal {
+	font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+}
+
 .zcal .week .vheader {
 	/* the time-label column takes up 0.4 the space of the day columns */
 	float: left;
@@ -80,5 +84,6 @@ stacked, instead of horizontally. */
 }
 
 .zcal .appt .appt-contents {
-	padding: 3px;
+	padding: 6px;
+	color: #ddf;
 }
