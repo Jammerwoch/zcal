@@ -105,6 +105,9 @@
 				addTimeBlocks( $day, settings );
 			}
 
+			// set the height for the zcal element for proper sizing; notice the 5% fudge factor
+			this.height( $dayHeader.height() * 1.05 );
+
 			return this;
 		},
 
