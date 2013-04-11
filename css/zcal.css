@@ -5,7 +5,7 @@ copyright 2013 Ethan Brown <ethan@philomathics.com> */
 	font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
 }
 
-.zcal .week .vheader {
+.zcal .vheader {
 	/* the time-label column takes up 0.4 the space of the day columns */
 	float: left;
 	width: 5.40540540540541%; /* 0.4/7.4  */
@@ -14,11 +14,11 @@ copyright 2013 Ethan Brown <ethan@philomathics.com> */
 	display: none;
 }
 
-.zcal .week .vheader.first {
+.zcal .vheader.first {
 	display: block;
 }
 
-.zcal .week .day {
+.zcal .day {
 	float: left;
 	width: 13.51351351351351%;			/* 1.0/7.4  */
 	/* TODO: ask Greg how to make these borders work.  If I add this in, it throws the % layout off, and adding
@@ -31,14 +31,14 @@ copyright 2013 Ethan Brown <ethan@philomathics.com> */
 stacked, instead of horizontally. */
 @media (max-width: 450px) {
 
-	.zcal .week .vheader {
+	.zcal .vheader {
 		clear: left;
 		width: 10%;
 		display: block;			/* show all vertical headers */
 		margin-bottom: 40px;	/* give the next day some space */
 	}
 
-	.zcal .week .day {
+	.zcal .day {
 		width: 90%;
 	}
 

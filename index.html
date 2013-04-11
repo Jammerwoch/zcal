@@ -11,7 +11,12 @@
 </head>
 
 <body>
-	<div class="zcal"></div>
+	<h1>Week</h1>
+	<div class="zcal" id="zcalWeek"></div>
+	<h1>Day</h1>
+	<div class="zcal" id="zcalDay"></div>
+	<h1>Month</h1>
+	<div class="zcal" id="zcalMonth"></div>
 </body>
 
 <script src="http://code.jquery.com/jquery-1.9.1.min.js"></script>
@@ -20,9 +25,11 @@
 <script src="jquery-zcal.js"></script>
 
 <script>
-	$('.zcal').zcal()
+	$('#zcalWeek').zcal('initWeek')
 		.zcal( 'addAppointment', 2, 1015, 1130, 'foo' )
 		.zcal( 'addAppointment', 3,  900, 1030, 'bar' );
+	$('#zcalDay').zcal('initDay');
+	$('#zcalMonth').zcal('initMonth');
 </script>
 
 </html>
